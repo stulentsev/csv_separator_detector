@@ -91,4 +91,30 @@ foo;1;asdadsf
 
     it { expect(detected_separator).to eq ';' }
   end
+
+  context 'empty string' do
+    let(:input) { '' }
+    it { expect{detected_separator}.to raise_error CsvSeparatorDetector::Error }
+  end
+
+  context 'blank string' do
+    let(:input) { "    \n" }
+    it { expect{detected_separator}.to raise_error CsvSeparatorDetector::Error }
+  end
+
+  context 'no input' do
+    let(:input) { nil }
+    it { expect{detected_separator}.to raise_error ArgumentError }
+  end
 end
+
+
+
+
+
+
+
+
+
+
+

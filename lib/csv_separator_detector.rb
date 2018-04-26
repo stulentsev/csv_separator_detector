@@ -12,6 +12,8 @@ class CsvSeparatorDetector
   end
 
   def call
+    fail ArgumentError, 'Input is nil. Expected it to be a string, with comma-separated lines of text' if csv_text.nil?
+
     separator_with_most_columns or fail CsvSeparatorDetector::Error
   end
 
@@ -39,8 +41,9 @@ class CsvSeparatorDetector
     supported_separators.each_with_object({}) do |sep, memo|
       begin
         columns              = ::CSV.parse_line(csv_text, col_sep: sep)
-        memo[columns.length] ||= []
-        memo[columns.length] << sep
+        column_count = columns ? columns.length : 0
+        memo[column_count] ||= []
+        memo[column_count] << sep
       rescue ::CSV::MalformedCSVError
         # do nothing
       end
