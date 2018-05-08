@@ -27,6 +27,7 @@ class CsvSeparatorDetector
   # return neither of them.
   def separator_with_most_columns
     counts = count_columns_for_separators
+    return if counts.empty?
 
     top_separators = counts.max_by(&:first).last
     top_separators.first if top_separators.length == 1
@@ -38,9 +39,10 @@ class CsvSeparatorDetector
   #   0 => ['\t']
   # }
   def count_columns_for_separators
+    normalized_csv_text = normalize_line_endings(csv_text)
     supported_separators.each_with_object({}) do |sep, memo|
       begin
-        columns              = ::CSV.parse_line(csv_text, col_sep: sep)
+        columns              = ::CSV.parse_line(normalized_csv_text, col_sep: sep)
         column_count = columns ? columns.length : 0
         memo[column_count] ||= []
         memo[column_count] << sep
@@ -48,5 +50,9 @@ class CsvSeparatorDetector
         # do nothing
       end
     end
+  end
+
+  def normalize_line_endings(text)
+    text.encode(text.encoding, universal_newline: true)
   end
 end

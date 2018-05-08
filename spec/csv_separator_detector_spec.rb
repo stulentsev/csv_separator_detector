@@ -102,6 +102,29 @@ foo;1;asdadsf
     it { expect{detected_separator}.to raise_error CsvSeparatorDetector::Error }
   end
 
+  context 'multiline single cell input' do
+    let(:input) {
+      <<~CSV
+        "foo
+        bar
+        baz"
+      CSV
+    }
+
+    it { expect{detected_separator}.to raise_error CsvSeparatorDetector::Error }
+  end
+
+  context 'multiline cells with CR delimiter' do
+    let(:input) {
+      <<~CSV
+      1234,"foo\rbar\rbaz"
+      4567,"hello\rworld"
+      CSV
+    }
+
+    it { expect(detected_separator).to eq ',' }
+  end
+
   context 'no input' do
     let(:input) { nil }
     it { expect{detected_separator}.to raise_error ArgumentError }
